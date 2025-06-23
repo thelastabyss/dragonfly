@@ -6,9 +6,9 @@ import json
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 
 # Common folders
-DATA_DIR = os.path.join(BASE_DIR, "data")
-OUTPUT_DIR = os.path.join(BASE_DIR, "output")
-CONFIG_DIR = os.path.join(BASE_DIR, "config")
+DATA_DIR = os.getenv("DATA_DIR", os.path.join(BASE_DIR, "data"))
+OUTPUT_DIR = os.getenv("OUTPUT_DIR", os.path.join(BASE_DIR, "output"))
+CONFIG_DIR = os.getenv("CONFIG_DIR", os.path.join(BASE_DIR, "config"))
 SONG_JSON_PATH = os.path.join(DATA_DIR, "spotify_songs.json")
 SONG_MATRIX_PATH = os.path.join(DATA_DIR, "song_matrix.npy")
 SONG_METADATA_PATH = os.path.join(DATA_DIR, "index_to_song.json")
