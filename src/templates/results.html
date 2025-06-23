@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Your Playlist</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 2rem;
+      margin: 0;
+      background-color: #f8f9fa;
+      color: #333;
+    }
+
+    h1 {
+      margin-bottom: 0.5rem;
+    }
+
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .back-link {
+      text-decoration: none;
+      color: #007BFF;
+      font-size: 0.95rem;
+    }
+
+    .note {
+      margin-bottom: 2rem;
+      font-size: 0.95rem;
+      background-color: #fff3cd;
+      padding: 1rem;
+      border-radius: 5px;
+      border: 1px solid #ffeeba;
+    }
+
+    .grid-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .song {
+      background: white;
+      padding: 1rem;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      text-align: center;
+    }
+
+    .embed-player {
+      margin-top: 0.5rem;
+    }
+
+    .fallback-link {
+      margin-top: 0.5rem;
+    }
+
+    a {
+      color: #007BFF;
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+	
+	<!-- .embed-player {
+	  flex: 1;
+	  min-width: 300px;
+	  margin: 10px;
+	  position: relative;
+	  z-index: 1;
+	}
+
+	.embed-player iframe {
+	  z-index: 2;
+	  position: relative;
+	  pointer-events: auto;
+	} -->
+
+  </style>
+</head>
+<body>
+
+  <div class="top-bar">
+    <h1>🎧 Your Recommended Playlist</h1>
+    <a href="/" class="back-link">🔁 Choose another mood</a>
+  </div>
+
+  <div class="note">
+    ℹ️ You must be <strong>logged in to Spotify</strong> to listen to full tracks here. Otherwise, only a short preview will play.
+  </div>
+
+  <div class="grid-container">
+    {% for song in songs %}
+    <div class="song">
+      <div><strong>{{ song.track_name }}</strong></div>
+      <div><em>{{ song.artist_name }}</em></div>
+
+      <div class="embed-player" style="position: relative; width: 100%; height: 80px;">
+		  <iframe 
+			src="https://open.spotify.com/embed/track/{{ song.track_id }}"
+			width="100%" height="80" frameborder="0"
+			allowtransparency="true" allow="encrypted-media"
+			style="z-index: 1; position: relative;">
+		  </iframe>
+		</div>
+
+
+      <div class="fallback-link">
+        <a href="https://open.spotify.com/track/{{ song.track_id }}" target="_blank">
+          ▶️ Play on Spotify
+        </a>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  <!-- Add below the existing playlist rendering in results.html -->
+  <hr style="margin-top: 3rem;">
+
+  <div class="feedback-section" style="margin-top: 40px; padding: 20px; border-top: 2px solid #ccc;">
+    <h2 style="font-size: 1.5em; margin-bottom: 20px;">🎧 Share your feedback</h2>
+
+    <form method="POST" action="/submit_feedback" id="feedback-form">
+	  <input type="hidden" name="session_id" value="{{ session_id }}">
+	  <input type="hidden" name="user_vector" value='{{ user_vector | tojson }}'>
+	  <input type="hidden" name="track_ids" value='{{ track_ids | tojson }}'>
+
+	  <label>Did the recommendations match your current mood?</label><br>
+	  <input type="radio" name="match_mood" value="Yes" required> Yes<br>
+	  <input type="radio" name="match_mood" value="No"> No<br>
+	  <input type="radio" name="match_mood" value="Somewhat"> Somewhat<br><br>
+
+	  <label>Would you use this tool again in the future?</label><br>
+	  <input type="radio" name="reuse" value="Yes" required> Yes<br>
+	  <input type="radio" name="reuse" value="No"> No<br>
+	  <input type="radio" name="reuse" value="Maybe"> Maybe<br><br>
+
+	  <label>Any suggestions or comments?</label><br>
+	  <textarea name="comments" rows="4" cols="50" placeholder="Your thoughts..." style="width: 100%; padding: 10px;"></textarea><br><br>
+
+	  <button type="submit" id="submit-feedback" style="cursor: pointer;" class="btn btn-primary">
+		Submit Feedback
+	  </button>
+
+    </form>
+  </div>
+
+  <div id="thank-you-message" style="display: none; margin-top: 10px;">
+    <p>🎉 Thank you for your feedback!</p>
+  </div>
+
+  <script>
+  document.addEventListener("DOMContentLoaded", () => {
+    document.getElementById("feedback-form").addEventListener("submit", function(e) {
+      document.getElementById("feedback-form").style.display = "none";
+      document.getElementById("thank-you-message").style.display = "block";
+	  // Reset all Spotify iframes after feedback submission
+      document.querySelectorAll(".embed-player iframe").forEach((iframe) => {
+	    iframe.src = iframe.src;
+	  });
+
+    });
+  });
+</script>
+
+<footer style="text-align:center; font-size:0.8rem; margin-top:2rem;">
+  © 2025 Shubham Rathi. All rights reserved.
+</footer>
+
+</body>
+</html>
